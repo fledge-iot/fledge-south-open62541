@@ -175,13 +175,30 @@ int OPCUA::addSubscribe(const UA_NodeId *node, bool active)
 				Logger::getLogger()->debug("Node %s is a variable", str.data);
 				UA_MonitoredItemCreateRequest monRequest =
 					UA_MonitoredItemCreateRequest_default(ref->nodeId.nodeId);
-				string *name = new string((char *)str.data);
-				// Strip " from name
-				size_t pos;
-				while ((pos = name->find_first_of("\"")) != std::string::npos)
-				{
-					name->erase(pos, 1);
+				std::string dpname = "Unknown";;
+				try {
+					UA_NodeId *id = &(ref->nodeId.nodeId);
+					if (id->identifierType == UA_NODEIDTYPE_NUMERIC)
+					{
+						char buf[80];
+						snprintf(buf, sizeof(buf), "%d", id->identifier.numeric);
+						dpname = buf;
+					}
+					else
+					{
+						dpname = (char *)(id->identifier.byteString.data);
+					}
+				} catch (std::exception& e) {
+					Logger::getLogger()->error("No name for data change event: %s", e.what());
 				}
+				// Strip " from datapoint name
+				size_t pos;
+				while ((pos = dpname.find_first_of("\"")) != std::string::npos)
+				{
+					dpname.erase(pos, 1);
+				}
+				string *name = new string(dpname);
+
 				UA_MonitoredItemCreateResult monResponse =
 					UA_Client_MonitoredItems_createDataChange(m_client, m_subscriptionId,
                                               UA_TIMESTAMPSTORETURN_BOTH,
@@ -497,6 +514,7 @@ void OPCUA::dataChanged(const string *name, UA_DataValue *value)
             		dpv = DatapointValue((double)*(UA_Double*)variant->data);
 		}
 	}
+	
 	vector<Datapoint *> points;
 	points.push_back(new Datapoint(*name, dpv));
 	Reading reading(*name, points);

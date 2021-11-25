@@ -55,13 +55,6 @@ static const char *default_config = QUOTE({
 		"displayName" : "OPCUA Object Subscriptions",
 	       	"order" : "3"
        		},
-	"subscribeById" : {
-		"description" : "Subscribe using node id",
-		"type" : "boolean",
-		"default" : "true",
-		"displayName" : "Subscribe By ID",
-		"order" : "4"
-		},
 	"reportingInterval" : {
 		"description" : "The minimum reporting interval for data change notifications" ,
 		"type" : "integer",
