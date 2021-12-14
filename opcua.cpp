@@ -169,7 +169,7 @@ int OPCUA::addSubscribe(const UA_NodeId *node, bool active)
 		{
 			UA_ReferenceDescription *ref = &(bResp.results[i].references[j]);
 			UA_String str = UA_STRING_NULL;
-			UA_NodeId_toString(&(ref->nodeId.nodeId), &str);
+			UA_NodeId_print(&(ref->nodeId.nodeId), &str);
 			if (ref->nodeClass == UA_NODECLASS_VARIABLE)
 			{
 				Logger::getLogger()->debug("Node %s is a variable", str.data);
